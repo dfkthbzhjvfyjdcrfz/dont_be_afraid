@@ -1,0 +1,187 @@
+ <script>
+       const mainBoard = document.getElementById('main-board');
+
+function startEffect(effect) {
+    if (effect === 'glitch') {
+        mainBoard.classList.add('glitch-active');
+        mainBoard.classList.remove('strobe-active');
+    } else if (effect === 'strobe') {
+        mainBoard.classList.add('strobe-active');
+        mainBoard.classList.remove('glitch-active');
+    }
+}
+
+
+      
+          // ===== ПРОСТОЙ СТРОБ (БЕЗ ТРЕКА) =====
+        const strobeBtn = document.getElementById('strobeBtn');
+        
+        strobeBtn.addEventListener('mousedown', () => {
+            mainBoard.classList.add('strobe-active');
+        });
+        
+        strobeBtn.addEventListener('mouseup', () => {
+            mainBoard.classList.remove('strobe-active');
+        });
+        
+        strobeBtn.addEventListener('mouseleave', () => {
+            mainBoard.classList.remove('strobe-active');
+        });
+        
+        playBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                startTechno();
+                playBtn.textContent = '⏸';
+            } else {
+                stopTechno();
+                playBtn.textContent = '▶';
+            }
+        });
+
+        // ДВИЖЕНИЕ ЗРАЧКОВ
+        document.addEventListener('mousemove', function(event) {
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            
+            moveLeftPupil('pupil1', mouseX, mouseY);
+            moveRightPupil('pupil2', mouseX, mouseY);
+        });
+
+        function moveLeftPupil(pupilId, mouseX, mouseY) {
+            const pupil = document.getElementById(pupilId);
+            if (!pupil) return;
+            
+            const eye = pupil.parentElement;
+            const eyeRect = eye.getBoundingClientRect();
+            const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+            const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+            
+            const deltaX = mouseX - eyeCenterX;
+            const deltaY = mouseY - eyeCenterY;
+            
+            const maxMoveX = 45;
+            const maxMoveY = 70;
+            
+            let moveX = deltaX;
+            let moveY = deltaY;
+            
+            if (Math.abs(deltaX) > maxMoveX) {
+                moveX = (deltaX / Math.abs(deltaX)) * maxMoveX;
+            }
+            
+            if (Math.abs(deltaY) > maxMoveY) {
+                moveY = (deltaY / Math.abs(deltaY)) * maxMoveY;
+            }
+            
+            pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+        }
+
+        function moveRightPupil(pupilId, mouseX, mouseY) {
+            const pupil = document.getElementById(pupilId);
+            if (!pupil) return;
+            
+            const eye = pupil.parentElement;
+            const eyeRect = eye.getBoundingClientRect();
+            const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+            const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+            
+            const deltaX = (mouseX - eyeCenterX) * -1;
+            const deltaY = mouseY - eyeCenterY;
+            
+            const maxMoveX = 45;
+            const maxMoveY = 70;
+            
+            let moveX = deltaX;
+            let moveY = deltaY;
+            
+            if (Math.abs(deltaX) > maxMoveX) {
+                moveX = (deltaX / Math.abs(deltaX)) * maxMoveX;
+            }
+            
+            if (Math.abs(deltaY) > maxMoveY) {
+                moveY = (deltaY / Math.abs(deltaY)) * maxMoveY;
+            }
+            
+            pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+        }
+
+        // МОРГАНИЕ
+        function blink() {
+            const eyes = document.querySelectorAll('.eye-left, .eye-right');
+            eyes.forEach(eye => {
+                eye.classList.add('blinking');
+                setTimeout(() => {
+                    eye.classList.remove('blinking');
+                }, 150);
+            });
+        }
+
+        function scheduleBlink() {
+            const nextBlink = Math.random() * 1000 + 4000;
+            setTimeout(() => {
+                blink();
+                scheduleBlink();
+            }, nextBlink);
+        }
+
+        scheduleBlink();
+
+        // КАРУСЕЛЬ И МОДАЛЬНОЕ ОКНО
+        let currentImages = [];
+        let currentIndex = 0;
+
+        function openModal(index, eventId) {
+            const carousel = document.getElementById(`carousel${eventId.slice(-1)}`);
+            const items = carousel.querySelectorAll('.carousel-item');
+            
+            currentImages = Array.from(items).map(item => {
+                return 'https://via.placeholder.com/800x600?text=Photo+' + (Array.from(items).indexOf(item) + 1);
+            });
+            
+            currentIndex = index;
+            
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = currentImages[index];
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+            document.getElementById('modalImage').src = currentImages[currentIndex];
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % currentImages.length;
+            document.getElementById('modalImage').src = currentImages[currentIndex];
+        }
+
+        // ИНСТА-МОДАЛКА
+        function openInstaModal(index) {
+            const items = document.querySelectorAll('.insta-item img');
+            currentImages = Array.from(items).map(img => img.src);
+            currentIndex = index;
+            
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = currentImages[index];
+            modal.classList.add('active');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        window.addEventListener('load', function() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            moveLeftPupil('pupil1', centerX, centerY);
+            moveRightPupil('pupil2', centerX, centerY);
+        });
+    </script>
