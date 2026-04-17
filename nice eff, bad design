@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✦ КОШАЧЬИ ГЛАЗА ✦</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .black-board {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: black;
+            padding: 40px;
+            border-left: 4px solid #00aaff;
+            border-right: 4px solid #00aaff;
+        }
+
+        /* ЭФФЕКТЫ (активируются кнопками) */
+        .glitch-active {
+            animation: glitch 0.1s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg) brightness(1); }
+            20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg) brightness(1.5); }
+            40% { transform: translate(3px, -2px); filter: hue-rotate(180deg) brightness(0.8); }
+            60% { transform: translate(-2px, 3px); filter: hue-rotate(270deg) brightness(1.3); }
+            80% { transform: translate(2px, -3px); filter: hue-rotate(360deg) brightness(0.9); }
+            100% { transform: translate(0); filter: hue-rotate(0deg) brightness(1); }
+        }
+
+        .strobe-active {
+            animation: strobe 0.05s infinite;
+        }
+
+        @keyframes strobe {
+            0% { opacity: 1; background-color: black; filter: brightness(1); }
+            25% { opacity: 0.3; background-color: white; filter: brightness(2); }
+            50% { opacity: 1; background-color: black; filter: brightness(1); }
+            75% { opacity: 0.3; background-color: #00aaff; filter: brightness(2); }
+            100% { opacity: 1; background-color: black; filter: brightness(1); }
+        }
+
+        .header {
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #00aaff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 4em;
+            color: #00aaff;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            color: #00aaff;
+            font-size: 2em;
+            text-transform: lowercase;
+        }
+
+        /* КНОПКИ */
+        .button-panel {
+            display: flex;
+            gap: 20px;
+        }
+
+        .effect-button {
+            background: transparent;
+            color: #00aaff;
+            border: 3px solid #00aaff;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            user-select: none;
+        }
+
+        .effect-button:active {
+            background: #00aaff;
+            color: black;
+            transform: scale(0.95);
+        }
+
+        .effect-button.glitch:active {
+            background: #ff00ff;
+            border-color: #ff00ff;
+            box-shadow: 0 0 30px #ff00ff;
+        }
+
+        .effect-button.strobe:active {
+            background: white;
+            border-color: white;
+            color: black;
+            box-shadow: 0 0 30px white;
+        }
+
+        /* АУДИОПЛЕЕР */
+        .audio-player {
+            margin: 20px 0 40px;
+            padding: 20px;
+            border: 3px solid #00aaff;
+            background: rgba(0,170,255,0.05);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #00aaff;
+            background: transparent;
+            color: #00aaff;
+            font-size: 2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: #00aaff;
+            color: black;
+        }
+
+        .volume-slider {
+            flex: 1;
+            min-width: 200px;
+            height: 6px;
+            background: #222;
+            -webkit-appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #00aaff;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #00aaff;
+            cursor: pointer;
+            border: none;
+            border-radius: 0;
+        }
+
+        .time-display {
+            color: #00aaff;
+            font-size: 1.2em;
+            font-family: monospace;
+        }
+
+        .main-content {
+            padding: 40px 0;
+            text-align: left;
+        }
+
+        .main-content h2 {
+            font-size: 5em;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .main-content h2 span {
+            color: #00aaff;
+        }
+
+        .main-content .question {
+            font-size: 3em;
+            color: #00aaff;
+            margin: 30px 0;
+            letter-spacing: 10px;
+        }
+
+        .main-content .invite {
+            color: #00aaff;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            margin-top: 20px;
+            line-height: 1.3;
+        }
+
+        /* КОШАЧЬИ ГЛАЗА */
+        .eyes-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 200px;
+            padding: 80px 0;
+            border-top: 4px solid #00aaff;
+            border-bottom: 4px solid #00aaff;
+        }
+
+        .eye {
+            position: relative;
+            width: 320px;
+            height: 160px;
+            
+            clip-path: path("M20,65 C20,15 100,-5 160,5 C220,15 300,25 300,70 C300,115 240,145 180,145 C120,145 40,125 20,75");
+            
+            background: #00aaff;
+            
+            transition: all 0.1s ease;
+        }
+
+        .pupil {
+            position: absolute;
+            width: 40px;
+            height: 110px;
+            background: black;
+            border-radius: 40% / 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.03s linear;
+        }
+
+        .eye.blinking {
+            clip-path: path("M20,65 C20,65 100,60 160,60 C220,60 300,65 300,70 C300,75 240,80 180,80 C120,80 40,75 20,65");
+            background: #00aaff;
+            opacity: 0.3;
+        }
+
+        /* ПРОЕКТЫ С КАРУСЕЛЬЮ */
+        .projects {
+            padding: 60px 0;
+            border-top: 4px solid #00aaff;
+        }
+
+        .projects h3 {
+            font-size: 3em;
+            color: #00aaff;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .event-section {
+            margin-bottom: 60px;
+        }
+
+        .event-title {
+            font-size: 2.5em;
+            color: white;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-left: 4px solid #00aaff;
+            padding-left: 20px;
+        }
+
+        .carousel-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 0;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .carousel-item {
+            flex: 0 0 300px;
+            height: 200px;
+            border: 3px solid #00aaff;
+            scroll-snap-align: start;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .carousel-item:hover {
+            transform: scale(1.05);
+            border-color: white;
+            box-shadow: 0 0 30px #00aaff;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-item .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00aaff;
+            font-size: 2em;
+        }
+
+        /* МОДАЛЬНОЕ ОКНО ДЛЯ КАРУСЕЛИ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            border: 4px solid #00aaff;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #00aaff;
+            font-size: 4em;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        .modal-prev, .modal-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00aaff;
+            font-size: 4em;
+            cursor: pointer;
+            padding: 20px;
+            z-index: 1001;
+        }
+
+        .modal-prev { left: 20px; }
+        .modal-next { right: 20px; }
+
+        .modal-prev:hover, .modal-next:hover {
+            color: white;
+        }
+
+        /* ВИДЕО */
+        .video-section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 3px solid #00aaff;
+        }
+
+        .video-title {
+            color: #00aaff;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .bottom-text {
+            padding: 40px 0;
+        }
+
+        .bottom-text .line1 {
+            font-size: 4em;
+            color: #00aaff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .bottom-text .line2 {
+            font-size: 3.5em;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 10px 0;
+        }
+
+        .bottom-text .line3 {
+            font-size: 2.5em;
+            color: #00aaff;
+            text-transform: uppercase;
+            line-height: 1.3;
+            max-width: 80%;
+        }
+
+        .footer {
+            text-align: right;
+            padding-top: 30px;
+            border-top: 4px solid #00aaff;
+            color: #00aaff;
+            font-size: 1.2em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .eye {
+                width: 220px;
+                height: 110px;
+            }
+            .pupil {
+                width: 30px;
+                height: 80px;
+            }
+            .eyes-container {
+                gap: 100px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="black-board" id="main-board">
+
+        <div class="header">
+            <div>
+                <h1>✦ CAT EYE ✦</h1>
+                <p>lil bitch</p>
+            </div>
+            <div class="button-panel">
+                <button class="effect-button glitch" id="glitchBtn" onmousedown="startEffect('glitch')" onmouseup="stopEffect('glitch')" onmouseleave="stopEffect('glitch')">ГЛИТЧ</button>
+                <button class="effect-button strobe" id="strobeBtn" onmousedown="startEffect('strobe')" onmouseup="stopEffect('strobe')" onmouseleave="stopEffect('strobe')">СТРОБ</button>
+            </div>
+        </div>
+
+        <!-- АУДИОПЛЕЕР -->
+        <div class="audio-player">
+            <div class="player-controls">
+                <button class="play-btn" id="playBtn">▶</button>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+                <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h2><span>YOU</span> SEE <span>HUH</span>??</h2>
+            <div class="question">● ● ●</div>
+            <div class="invite">
+                ПРИСЯДЬ<br>
+                РАССКАЖИ ПОБОЛЬШЕ
+            </div>
+        </div>
+
+        <div class="eyes-container">
+            <div class="eye" id="eye1">
+                <div class="pupil" id="pupil1"></div>
+            </div>
+            <div class="eye" id="eye2">
+                <div class="pupil" id="pupil2"></div>
+            </div>
+        </div>
+
+        <!-- ВИДЕО СЕКЦИЯ -->
+        <div class="video-section">
+            <div class="video-title">✦ ТВОЙ ВИДОС ✦</div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/rX3bLuJd3lg?autoplay=0" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- ПРОЕКТЫ С КАРУСЕЛЬЮ -->
+        <div class="projects">
+            <h3>✦ МЕРОПРИЯТИЯ ✦</h3>
+            
+            <div class="event-section">
+                <div class="event-title">▸ ВЕЧЕРИНКА 2026</div>
+                <div class="carousel-container">
+                    <div class="carousel" id="carousel1">
+                        <div class="carousel-item" onclick="openModal(0, 'event1')">
+                            <div class="placeholder">📸 1</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(1, 'event1')">
+                            <div class="placeholder">📸 2</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(2, 'event1')">
+                            <div class="placeholder">📸 3</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(3, 'event1')">
+                            <div class="placeholder">📸 4</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(4, 'event1')">
+                            <div class="placeholder">📸 5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-section">
+                <div class="event-title">▸ ФЕСТИВАЛЬ</div>
+                <div class="carousel-container">
+                    <div class="carousel" id="carousel2">
+                        <div class="carousel-item" onclick="openModal(0, 'event2')">
+                            <div class="placeholder">📸 1</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(1, 'event2')">
+                            <div class="placeholder">📸 2</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(2, 'event2')">
+                            <div class="placeholder">📸 3</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(3, 'event2')">
+                            <div class="placeholder">📸 4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-section">
+                <div class="event-title">▸ ВЫСТАВКА</div>
+                <div class="carousel-container">
+                    <div class="carousel" id="carousel3">
+                        <div class="carousel-item" onclick="openModal(0, 'event3')">
+                            <div class="placeholder">📸 1</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(1, 'event3')">
+                            <div class="placeholder">📸 2</div>
+                        </div>
+                        <div class="carousel-item" onclick="openModal(2, 'event3')">
+                            <div class="placeholder">📸 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНОЕ ОКНО ДЛЯ КАРУСЕЛИ -->
+        <div class="modal" id="modal">
+            <div class="modal-close" onclick="closeModal()">✕</div>
+            <div class="modal-prev" onclick="prevImage()">‹</div>
+            <div class="modal-next" onclick="nextImage()">›</div>
+            <div class="modal-content">
+                <img class="modal-image" id="modalImage" src="" alt="">
+            </div>
+        </div>
+
+        <div class="bottom-text">
+            <div class="line1">✦ I LOVE YOU ✦</div>
+            <div class="line2">lil bitch</div>
+            <div class="line3">YOU SEE HUH?? ПРИСЯДЬ РАССКАЖИ ПОБОЛЬШЕ ●</div>
+        </div>
+
+        <div class="footer">
+            ● 2026 ● КОШАЧЬИ ГЛАЗА ● ГЛИЧЧ ● СТРОБ ●
+        </div>
+
+    </div>
+
+    <script>
+        // ЭФФЕКТЫ ПО ЗАЖАТИЮ
+        const mainBoard = document.getElementById('main-board');
+        
+        function startEffect(effect) {
+            if (effect === 'glitch') {
+                mainBoard.classList.add('glitch-active');
+                mainBoard.classList.remove('strobe-active');
+            } else if (effect === 'strobe') {
+                mainBoard.classList.add('strobe-active');
+                mainBoard.classList.remove('glitch-active');
+            }
+        }
+        
+        function stopEffect(effect) {
+            mainBoard.classList.remove('glitch-active', 'strobe-active');
+        }
+
+        // АУДИОПЛЕЕР
+        const audio = new Audio();
+        audio.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // Заменишь на свой трек
+        
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const timeDisplay = document.getElementById('timeDisplay');
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '⏸';
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const minutes = Math.floor(audio.currentTime / 60);
+            const seconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+            const totalMinutes = Math.floor(audio.duration / 60);
+            const totalSeconds = Math.floor(audio.duration % 60).toString().padStart(2, '0');
+            timeDisplay.textContent = `${minutes}:${seconds} / ${totalMinutes}:${totalSeconds}`;
+        });
+
+        // КОШАЧЬИ ГЛАЗА
+        document.addEventListener('mousemove', function(event) {
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            
+            movePupil('pupil1', mouseX, mouseY);
+            movePupil('pupil2', mouseX, mouseY);
+        });
+
+        function movePupil(pupilId, mouseX, mouseY) {
+            const pupil = document.getElementById(pupilId);
+            if (!pupil) return;
+            
+            const eye = pupil.parentElement;
+            const eyeRect = eye.getBoundingClientRect();
+            const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+            const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+            
+            const deltaX = mouseX - eyeCenterX;
+            const deltaY = mouseY - eyeCenterY;
+            
+            const maxMoveX = 30;
+            const maxMoveY = 40;
+            
+            let moveX = deltaX;
+            let moveY = deltaY;
+            
+            if (Math.abs(deltaX) > maxMoveX) {
+                moveX = (deltaX / Math.abs(deltaX)) * maxMoveX;
+            }
+            
+            if (Math.abs(deltaY) > maxMoveY) {
+                moveY = (deltaY / Math.abs(deltaY)) * maxMoveY;
+            }
+            
+            pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+        }
+
+        // МОРГАНИЕ
+        function blink() {
+            const eyes = document.querySelectorAll('.eye');
+            eyes.forEach(eye => {
+                eye.classList.add('blinking');
+                setTimeout(() => {
+                    eye.classList.remove('blinking');
+                }, 150);
+            });
+        }
+
+        function scheduleBlink() {
+            const nextBlink = Math.random() * 1000 + 4000;
+            setTimeout(() => {
+                blink();
+                scheduleBlink();
+            }, nextBlink);
+        }
+
+        scheduleBlink();
+
+        // КАРУСЕЛЬ И МОДАЛЬНОЕ ОКНО
+        let currentImages = [];
+        let currentIndex = 0;
+
+        function openModal(index, eventId) {
+            const carousel = document.getElementById(`carousel${eventId.slice(-1)}`);
+            const items = carousel.querySelectorAll('.carousel-item');
+            
+            currentImages = Array.from(items).map(item => {
+                // Здесь должна быть замена на реальные фото
+                return 'https://via.placeholder.com/800x600?text=Photo+' + (Array.from(items).indexOf(item) + 1);
+            });
+            
+            currentIndex = index;
+            
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = currentImages[index];
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+            document.getElementById('modalImage').src = currentImages[currentIndex];
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % currentImages.length;
+            document.getElementById('modalImage').src = currentImages[currentIndex];
+        }
+
+        // Закрытие по ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        window.addEventListener('load', function() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            movePupil('pupil1', centerX, centerY);
+            movePupil('pupil2', centerX, centerY);
+        });
+    </script>
+</body>
+</html>
